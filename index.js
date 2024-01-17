@@ -1,7 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const app = express();
-const Note = require("./modles/note");
+const Note = require("./models/note");
 let notes = [
   { id: 1, content: "HTML is easy", important: true },
   { id: 2, content: "Browser can execute only JavaScript", important: false },
@@ -16,25 +16,30 @@ const requestLogger = (req, res, next) => {
   console.log("Path:", req.path);
   console.log("Body:", req.body);
   console.log("---");
+
   next();
 };
 app.use(requestLogger);
 app.get("/", (req, res) => {
-  res.send("<h1>Hello worlssd</h1>");
+  res.send("<h1>Hello world</h1>");
 });
 app.get("/api/notes", (req, res) => {
   res.json(notes);
 });
 app.get("/api/notes/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const note = notes.find((note) => note.id === id);
-
-  if (note) {
-    res.json(note);
-  } else {
-    res.status(404).end();
-  }
+  Note.findById(req.params.id)
+    .then((note) => {
+      if (note) {
+        res.json(note);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch((error) => {
+      res.status(400).send({ error: "malformatted id" });
+    });
 });
+
 app.delete("/api/notes/:id", (req, res) => {
   const id = Number(req.params.id);
   notes = notes.filter((note) => note.id !== id);
