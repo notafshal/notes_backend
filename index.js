@@ -1,5 +1,7 @@
 const express = require("express");
+require("dotenv").config();
 const app = express();
+const Note = require("./modles/note");
 let notes = [
   { id: 1, content: "HTML is easy", important: true },
   { id: 2, content: "Browser can execute only JavaScript", important: false },
@@ -47,7 +49,7 @@ const unknownEndpoint = (req, res) => {
   res.status(404).send({ error: "unknown endpoint" });
 };
 app.use(unknownEndpoint);
-const PORT = 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port localhost:${PORT}`);
 });
